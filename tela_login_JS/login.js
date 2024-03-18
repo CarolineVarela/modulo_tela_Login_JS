@@ -7,15 +7,13 @@ class Login {
     static callback_ok = null;
     static callback_notok = null;
     static config = {
-      cor1: "162938",
-      cor2: "75428aad"
+      cor1: null,//"162938",
+      cor2: null,//"75428aad",
+      endpoint: null //'https://a124f571-7d19-4945-9d08-0c7ef9a3a60d-00-34tsr7j3lg8q.janeway.replit.dev/'
     }
-    static endpoint = 'https://a124f571-7d19-4945-9d08-0c7ef9a3a60d-00-34tsr7j3lg8q.janeway.replit.dev/';
 
-    static login =(callback_ok, callback_notok, config = null)=> {
-        if (config != null) {
-          this.config = config;
-        }
+    static login =(callback_ok, callback_notok, config)=> {
+        this.config = config;
         this.callback_ok =()=>{callback_ok()};
         this.callback_notok =()=>{callback_notok()};
         // this.endpoint += `?matricula=${mat}&senha=${pas}`
@@ -168,23 +166,24 @@ class Login {
     static verificarLogin =()=> {
       const mat = document.getElementById("f_username").value;
       const pas = document.getElementById("f_password").value;
-      const endpoint = `https://a124f571-7d19-4945-9d08-0c7ef9a3a60d-00-34tsr7j3lg8q.janeway.replit.dev/?matricula=${mat}&senha=${pas}`;
+      const endpoint = `${this.config.endpoint}/?matricula=${mat}&senha=${pas}`;
 
       fetch(endpoint)
       .then(res=>res.json())
       .then(res=>{
         if(res) {
-          this.logado = true;
-          this.matLogado = mat;
-          this.nomeLogado = res.nome;
-          this.acessoLogado = res.acesso;
+          // mais seguro verificar via token
+          sessionStorage.setItem("logado", "true");
+          sessionStorage.setItem("matLogado", mat);
+          sessionStorage.setItem("nomeLogado", res.nome);
+          sessionStorage.setItem("acessoLogado", res.acesso);
           this.callback_ok();
           this.fechar();
         }else{
-          this.logado = false;
-          this.matLogado = null;
-          this.nomeLogado = null;
-          this.acessoLogado = null;
+          sessionStorage.setItem("logado", "false");
+          sessionStorage.setItem("matLogado", "");
+          sessionStorage.setItem("nomeLogado", "");
+          sessionStorage.setItem("acessoLogado", "");
           this.callback_notok();
         }
       })
